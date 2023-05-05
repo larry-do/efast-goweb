@@ -14,7 +14,7 @@ func (req Request) QueryParam(key string) string {
 	return req.URL.Query().Get(key)
 }
 
-func (req Request) RequestBodyFromJson(object any) any {
+func (req Request) RequestBodyFromJson(object any) error {
 	return json.NewDecoder(req.Body).Decode(object)
 }
 
