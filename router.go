@@ -23,6 +23,9 @@ func (router Router) HandleDeleteRequest(path string, doFunc func(Response, Requ
 }
 
 func (router Router) HandleRequest(path string, doFunc func(Response, Request)) *mux.Route {
+	if doFunc == nil {
+		log.Warn().Msgf("Handler null for path %s", path)
+	}
 	return router.HandleFunc(path, chainBuilder(logMiddleware, router.secureFilter).build(convertToHandlerFunc(doFunc)))
 }
 
