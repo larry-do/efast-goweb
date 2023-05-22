@@ -26,6 +26,12 @@ func (resp Response) Json(object any) {
 		log.Error().Err(err).Msg("")
 		return
 	}
+	b, err := json.Marshal(object)
+	if err != nil {
+		log.Debug().Err(err).Msg("")
+		return
+	}
+	log.Debug().Msg(string(b))
 }
 
 func (resp Response) PlainText(str string) {
