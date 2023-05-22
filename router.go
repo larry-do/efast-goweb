@@ -2,6 +2,7 @@ package goweb
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -22,19 +23,51 @@ func (router Router) HandleDeleteRequest(path string, doFunc func(Response, Requ
 }
 
 func (router Router) HandleRequest(path string, doFunc func(Response, Request)) *mux.Route {
-	return router.HandleFunc(path, chainBuilder(logMiddleware, doSomethingMiddleware).build(convertHandlerFunction(doFunc)))
+	return router.HandleFunc(path, chainBuilder(logMiddleware, router.secureFilter).build(convertToHandlerFunc(doFunc)))
 }
 
-func convertHandlerFunction(f func(Response, Request)) http.HandlerFunc {
-	return func(response http.ResponseWriter, request *http.Request) {
+func convertToHandlerFunc(f func(Response, Request)) http.HandlerFunc {
+	return func(resp http.ResponseWriter, req *http.Request) {
 		f(Response{
-			ResponseWriter: response,
+			ResponseWriter: resp,
 		}, Request{
-			Request: request,
+			Request: req,
 		})
 	}
 }
 
+func (router Router) secureFilter(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
+		log.Debug().Str("remote_addr", req.RemoteAddr).
+			Str("method", req.Method).
+			Str("url_path", req.URL.Path).
+			Msg("Security checking")
+
+		if router.securityRules != nil {
+			for i := range router.securityRules {
+				if !router.securityRules[i](Response{ResponseWriter: resp}, Request{Request: req}) {
+					return
+				}
+			}
+		}
+
+		next.ServeHTTP(resp, req)
+	})
+}
+
 type Router struct {
+	securityRules []SecurityRuleChecking
 	*mux.Router
+}
+
+func NewRouter() Router {
+	return Router{
+		securityRules: nil,
+		Router:        mux.NewRouter(),
+	}
+}
+
+func (router Router) AddSecurityRules(securityRuleCheckingList ...SecurityRuleChecking) Router {
+	router.securityRules = append(router.securityRules, securityRuleCheckingList...)
+	return router
 }

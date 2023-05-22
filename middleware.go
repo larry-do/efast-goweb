@@ -33,10 +33,3 @@ func logMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(resp, req)
 	})
 }
-
-func doSomethingMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
-		log.Info().Msg("Do something in middle ware")
-		next.ServeHTTP(resp, req)
-	})
-}
