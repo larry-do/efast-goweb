@@ -9,10 +9,12 @@ import (
 
 func (resp Response) RespondJson(statusCode int, data any) {
 	resp.ContentType("application/json").Code(statusCode).Json(data)
+	log.Debug().Any("body", data).Int("code", statusCode).Msg("")
 }
 
 func (resp Response) RespondPlainText(statusCode int, data string) {
 	resp.ContentType("text/plain").Code(statusCode).PlainText(data)
+	log.Debug().Any("body", data).Int("code", statusCode).Msg("")
 }
 
 func (resp Response) ContentType(contentType string) Response {
@@ -26,12 +28,6 @@ func (resp Response) Json(object any) {
 		log.Error().Err(err).Msg("")
 		return
 	}
-	b, err := json.Marshal(object)
-	if err != nil {
-		log.Debug().Err(err).Msg("")
-		return
-	}
-	log.Debug().Msg(string(b))
 }
 
 func (resp Response) PlainText(str string) {

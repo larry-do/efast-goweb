@@ -44,6 +44,7 @@ func (router Router) secureFilter(next http.HandlerFunc) http.HandlerFunc {
 		log.Debug().Str("remote_addr", req.RemoteAddr).
 			Str("method", req.Method).
 			Str("url_path", req.URL.Path).
+			Int("applied_rules", len(router.securityRules)).
 			Msg("Security checking")
 
 		if router.securityRules != nil {
