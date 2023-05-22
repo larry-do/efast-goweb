@@ -1,4 +1,4 @@
-module efast-goweb
+module goweb
 
 go 1.20
 
