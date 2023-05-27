@@ -16,6 +16,10 @@ func (req Request) QueryParam(key string) string {
 	return req.URL.Query().Get(key)
 }
 
+func (req Request) QueryParams(key string) []string {
+	return req.URL.Query()[key]
+}
+
 func (req Request) RequestBodyFromJson(object any) error {
 	return json.NewDecoder(req.Body).Decode(object)
 }
