@@ -49,7 +49,9 @@ func (router Router) secureFilter(next http.HandlerFunc) http.HandlerFunc {
 
 		if router.securityRules != nil {
 			for i := range router.securityRules {
-				if !router.securityRules[i](Response{ResponseWriter: resp}, Request{Request: req}) {
+				err := router.securityRules[i](Response{ResponseWriter: resp}, Request{Request: req})
+				if err != nil {
+					log.Error().Err(err).Msg("")
 					return
 				}
 			}
