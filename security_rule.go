@@ -2,7 +2,7 @@ package goweb
 
 import "github.com/pkg/errors"
 
-type SecurityRuleChecking func(Response, Request) error
+type SecurityRuleChecking func(Request) error
 
 const AuthorizationAcceptAnyRole = "ANY_ROLE"
 

@@ -43,13 +43,13 @@ func (router Router) secureFilter(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
 		log.Debug().Str("remote_addr", req.RemoteAddr).
 			Str("method", req.Method).
-			Str("url_path", req.URL.Path).
+			Str("url", req.URL.Path).
 			Int("applied_rules", len(router.securityRules)).
 			Msg("Security checking")
 
 		if router.securityRules != nil {
 			for i := range router.securityRules {
-				err := router.securityRules[i](Response{ResponseWriter: resp}, Request{Request: req})
+				err := router.securityRules[i](Request{Request: req})
 				if err != nil {
 					log.Error().Err(err).Msg("")
 					return

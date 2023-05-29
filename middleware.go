@@ -28,7 +28,8 @@ func logMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
 		log.Debug().Str("remote_addr", req.RemoteAddr).
 			Str("method", req.Method).
-			Str("url_path", req.URL.Path).
+			Str("url", req.URL.Path).
+			Str("query", req.URL.RawQuery).
 			Any("body", req.Body).
 			Msg("Received a request")
 		next.ServeHTTP(resp, req)
