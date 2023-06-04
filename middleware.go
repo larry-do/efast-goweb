@@ -1,7 +1,10 @@
 package goweb
 
 import (
+	"bytes"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"io"
 	"net/http"
 )
 
@@ -26,12 +29,18 @@ func (c Chain) build(handler http.HandlerFunc) http.HandlerFunc {
 
 func logMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
-		log.Debug().Str("remote_addr", req.RemoteAddr).
-			Str("method", req.Method).
-			Str("url", req.URL.Path).
-			Str("query", req.URL.RawQuery).
-			Any("body", req.Body).
-			Msg("Received a request")
+		if log.Logger.GetLevel() <= zerolog.DebugLevel {
+			bodyData, _ := io.ReadAll(req.Body)
+			_ = req.Body.Close()
+			req.Body = io.NopCloser(bytes.NewBuffer(bodyData))
+
+			log.Debug().Str("remote_addr", req.RemoteAddr).
+				Str("method", req.Method).
+				Str("url", req.URL.Path).
+				Str("query", req.URL.RawQuery).
+				Str("body", string(bodyData)).
+				Msg("Received a request")
+		}
 		next.ServeHTTP(resp, req)
 	})
 }
