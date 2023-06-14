@@ -77,3 +77,10 @@ func (router Router) AddSecurityRules(securityRuleCheckingList ...SecurityRuleCh
 	router.securityRules = append(router.securityRules, securityRuleCheckingList...)
 	return router
 }
+
+func (router Router) SimpleGetHealthCheckApi() Router {
+	router.HandleGetRequest("/api/health-check", func(response Response, request Request) {
+		response.RespondPlainText(http.StatusOK, "I'm good. Thanks!")
+	})
+	return router
+}
