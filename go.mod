@@ -6,7 +6,9 @@ replace goutils => ../efast-goutils
 
 require (
 	github.com/gorilla/mux v1.8.0
+	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.1
+	gopkg.in/yaml.v3 v3.0.1
 	goutils v0.0.0-00010101000000-000000000000
 )
 
